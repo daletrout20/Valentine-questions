@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Be My Valentine 💖</title>
+
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #ffd6e8, #ffeaf4);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      overflow: hidden;
+    }
+
+    /* Floating hearts */
+    .heart {
+      position: absolute;
+      color: #ff5fa2;
+      font-size: 20px;
+      animation: float 6s linear infinite;
+      opacity: 0.8;
+    }
+
+    @keyframes float {
+      0% { transform: translateY(100vh) scale(0.8); opacity: 0; }
+      10% { opacity: 0.8; }
+      100% { transform: translateY(-10vh) scale(1.2); opacity: 0; }
+    }
+
+    .card {
+      background: #fff0f6;
+      padding: 40px 30px;
+      border-radius: 24px;
+      box-shadow: 0 10px 30px rgba(255, 105, 180, 0.25);
+      text-align: center;
+      max-width: 420px;
+      width: 90%;
+      z-index: 10;
+      position: relative;
+    }
+
+    h1 {
+      color: #d63384;
+      margin-bottom: 15px;
+      font-size: 2.1rem;
+    }
+
+    p {
+      color: #ad1457;
+      font-size: 1.1rem;
+      margin-bottom: 30px;
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      position: relative;
+      min-height: 70px;
+    }
+
+    button {
+      padding: 14px 32px;
+      border: none;
+      border-radius: 999px;
+      font-size: 1.05rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      min-width: 120px;
+      position: relative;
+      z-index: 100;
+    }
+
+    #yesBtn {
+      background: #ff85c0;
+      color: white;
+      box-shadow: 0 6px 14px rgba(255, 95, 162, 0.35);
+    }
+
+    #yesBtn:hover {
+      background: #ff5fa2;
+      transform: scale(1.05);
+    }
+
+    #noBtn {
+      background: #ffd6e8;
+      color: #ad1457;
+      transition: all 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+      position: relative;
+    }
+
+    #noBtn:hover {
+      background: #ff85c0;
+      color: white;
+    }
+
+    /* For the moving no button */
+    .noBtn-running {
+      background: #ff85c0 !important;
+      color: white !important;
+      box-shadow: 0 6px 14px rgba(255, 95, 162, 0.35) !important;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Background Music -->
+
+  <audio id="music" loop>
+    <source src="https://www.bensound.com/bensound-music/bensound-romantic.mp3" type="audio/mpeg">
+  </audio>
+
+  <div class="card" id="card">
+  <h2>To the Prettiest & Smartest & Funniest Teacher that I know🥹..</h2>
+    <h2>..will you be my Valentine? 💖</h2>
+    
+
+    <div class="buttons" id="buttons">
+      <button id="yesBtn">Yes 💕</button>
+      <button id="noBtn">No 🙈</button>
+    </div>
+  </div>
+
+  <script>
+    const noBtn = document.getElementById('noBtn');
+    const yesBtn = document.getElementById('yesBtn');
+    const music = document.getElementById('music');
+    const card = document.getElementById('card');
+    
+    // Variables to track button movement
+    let isRunning = false;
+    let runAwayTimer = null;
+    let buttonMoved = false;
+    let escapeAttempts = 0;
+    
+    // Function to open celebration page
+    function openCelebrationPage() {
+      // Create celebration page HTML
+      const celebrationHTML = `
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+          <meta charset="UTF-8" />
+          <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+          <title>Congratulations! 💖</title>
+          <style>
+            body {
+              margin: 0;
+              height: 100vh;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              background: linear-gradient(135deg, #ffd6e8, #ffeaf4);
+              font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+              overflow: hidden;
+              animation: fadeIn 0.5s ease;
+            }
+            
+            @keyframes fadeIn {
+              from { opacity: 0; }
+              to { opacity: 1; }
+            }
+            
+            .celebration-card {
+              background: #fff0f6;
+              padding: 40px 30px;
+              border-radius: 24px;
+              box-shadow: 0 10px 30px rgba(255, 105, 180, 0.25);
+              text-align: center;
+              max-width: 500px;
+              width: 90%;
+              z-index: 10;
+              animation: pop 0.6s ease;
+            }
+            
+            @keyframes pop {
+              0% { transform: scale(0.7); opacity: 0; }
+              100% { transform: scale(1); opacity: 1; }
+            }
+            
+            h1 {
+              color: #d63384;
+              margin-bottom: 15px;
+              font-size: 2.5rem;
+            }
+            
+            p {
+              color: #ad1457;
+              font-size: 1.2rem;
+              margin-bottom: 30px;
+            }
+            
+            .gif-container {
+              margin: 20px 0;
+              border-radius: 18px;
+              overflow: hidden;
+              box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            }
+            
+            img {
+              width: 100%;
+              display: block;
+            }
+            
+            .message {
+              background: #ff85c0;
+              color: white;
+              padding: 15px;
+              border-radius: 12px;
+              margin: 20px 0;
+              font-size: 1.3rem;
+            }
+            
+            .confetti {
+              position: absolute;
+              width: 10px;
+              height: 10px;
+              background: pink;
+              animation: confetti 3s linear forwards;
+            }
+            
+            @keyframes confetti {
+              from { transform: translateY(0) rotate(0deg); opacity: 1; }
+              to { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+            }
+            
+            .heart {
+              position: absolute;
+              color: #ff5fa2;
+              font-size: 24px;
+              animation: float 6s linear infinite;
+              opacity: 0.8;
+            }
+            
+            @keyframes float {
+              0% { transform: translateY(100vh) scale(0.8); opacity: 0; }
+              10% { opacity: 0.8; }
+              100% { transform: translateY(-10vh) scale(1.2); opacity: 0; }
+            }
+          </style>
+        </head>
+        <body>
+          <div class="celebration-card">
+            <h1> Congratulations!!</h1>
+            <p>Smart choice😏</p>
+			<div class="message">Thank you for putting the air in my lungs 🫁</div>
+            <div class="gif-container">
+            <img src="https://media.giphy.com/media/l0MYC0LajbaPoEADu/giphy.gif" alt="Hugging Bears Gif" />
+            </div>
+            <p>You've made me the happiestest boyfriend ever!!❤️</p>
+          </div>
+          
+          <script>
+            // Play celebration music
+			const music = new Audio('https://www.bensound.com/bensound-music/bensound-romantic.mp3');            music.loop = true;
+            music.volume = 0.5;
+            music.play();
+            
+            // Floating hearts generator
+            setInterval(() => {
+              const heart = document.createElement('div');
+              heart.className = 'heart';
+              heart.innerText = Math.random() > 0.5 ? '💗' : '💖';
+              heart.style.left = Math.random() * 100 + 'vw';
+              heart.style.fontSize = Math.random() * 25 + 16 + 'px';
+              document.body.appendChild(heart);
+              setTimeout(() => heart.remove(), 6000);
+            }, 300);
+            
+            // Confetti effect
+            function launchConfetti() {
+              for (let i = 0; i < 150; i++) {
+                setTimeout(() => {
+                  const confetti = document.createElement('div');
+                  confetti.className = 'confetti';
+                  confetti.style.left = Math.random() * 100 + 'vw';
+                  confetti.style.background = ['#ff85c0', '#ffd6e8', '#ff5fa2', '#ffcce0', '#ff99cc'][Math.floor(Math.random() * 5)];
+                  confetti.style.width = Math.random() * 10 + 5 + 'px';
+                  confetti.style.height = Math.random() * 10 + 5 + 'px';
+                  confetti.style.animationDuration = Math.random() * 2 + 2 + 's';
+                  document.body.appendChild(confetti);
+                  setTimeout(() => confetti.remove(), 3000);
+                }, i * 20);
+              }
+            }
+            
+            // Launch confetti when page loads
+            setTimeout(launchConfetti, 500);
+            setInterval(launchConfetti, 5000);
+            
+            // Also launch confetti on click
+            document.addEventListener('click', () => {
+              launchConfetti();
+            });
+          <\/script>
+        </body>
+        </html>
+      `;
+      
+      // Open the celebration page in a new tab/window
+      const newWindow = window.open();
+      newWindow.document.write(celebrationHTML);
+      newWindow.document.close();
+      
+      // Also play music in the original window
+      music.play();
+    }
+
+    // Function to calculate distance between two points
+    function distance(x1, y1, x2, y2) {
+      return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+    }
+
+    // Function to move the button away from cursor
+    function moveButtonAway(e) {
+      if (isRunning) return;
+      
+      const buttonRect = noBtn.getBoundingClientRect();
+      const cardRect = card.getBoundingClientRect();
+      
+      // Calculate center of button
+      const buttonCenterX = buttonRect.left + buttonRect.width / 2;
+      const buttonCenterY = buttonRect.top + buttonRect.height / 2;
+      
+      // Calculate distance from cursor to button center
+      const dist = distance(e.clientX, e.clientY, buttonCenterX, buttonCenterY);
+      
+      // If cursor is close to the button, move it away
+      if (dist < 100) {
+        isRunning = true;
+        escapeAttempts++;
+        
+        // Add running class for styling
+        noBtn.classList.add('noBtn-running');
+        
+        // Calculate new position (opposite direction from cursor)
+        const angle = Math.atan2(buttonCenterY - e.clientY, buttonCenterX - e.clientX);
+        const moveDistance = 80 + (escapeAttempts * 10); // Move further with each attempt
+        
+        let newX = buttonRect.left + Math.cos(angle) * moveDistance;
+        let newY = buttonRect.top + Math.sin(angle) * moveDistance;
+        
+        // Keep button within card boundaries
+        const padding = 20;
+        const maxX = cardRect.width - buttonRect.width - padding;
+        const maxY = cardRect.height - buttonRect.height - padding;
+        
+        newX = Math.max(padding, Math.min(newX, maxX));
+        newY = Math.max(padding, Math.min(newY, maxY));
+        
+        // Move the button
+        noBtn.style.position = 'absolute';
+        noBtn.style.left = `${newX - cardRect.left}px`;
+        noBtn.style.top = `${newY - cardRect.top}px`;
+        
+        // Change text after a few escapes
+        if (escapeAttempts === 2) {
+          noBtn.innerText = 'Hey! 😅';
+        } else if (escapeAttempts === 4) {
+          noBtn.innerText = 'Stop chasing me! 😅';
+        } else if (escapeAttempts >= 6) {
+          noBtn.innerText = 'Okay, Yes! 💕';
+        }
+        
+        buttonMoved = true;
+        
+        // Reset running flag after a short delay
+        setTimeout(() => {
+          isRunning = false;
+        }, 300);
+      }
+    }
+
+    // Track mouse movement for the running button
+    document.addEventListener('mousemove', (e) => {
+      if (buttonMoved) {
+        moveButtonAway(e);
+      }
+    });
+
+    // Initial hover to start the chase
+    noBtn.addEventListener('mouseenter', (e) => {
+      if (!buttonMoved) {
+        moveButtonAway(e);
+      }
+    });
+
+    // Both buttons open the celebration page
+    yesBtn.addEventListener('click', openCelebrationPage);
+    noBtn.addEventListener('click', openCelebrationPage);
+
+    // Floating hearts generator for the main page
+    setInterval(() => {
+      const heart = document.createElement('div');
+      heart.className = 'heart';
+      heart.innerText = Math.random() > 0.5 ? '💗' : '💖';
+      heart.style.left = Math.random() * 100 + 'vw';
+      heart.style.fontSize = Math.random() * 20 + 14 + 'px';
+      document.body.appendChild(heart);
+      setTimeout(() => heart.remove(), 6000);
+    }, 400);
+  </script>
+</body>
+</html>
